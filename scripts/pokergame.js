@@ -183,6 +183,9 @@ function occurances(arr) {
 
 }
 
+/**
+ * Display the Hand on the page
+ */
 function displayHand() {
     console.log(suitsHand);
     console.log(cardsHand);
