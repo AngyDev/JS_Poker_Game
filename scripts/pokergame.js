@@ -14,6 +14,8 @@ function createHand() {
         suitsHand[i] = suits[Math.floor(Math.random() * suits.length)];
         cardsHand[i] = cards[Math.floor(Math.random() * cards.length)];
     }
+
+    // TODO check per controllare che in una mano non posso avere 14  e 1 insieme
 }
 
 /**
@@ -181,8 +183,43 @@ function occurances(arr) {
 
 }
 
-function playGame() {
+function displayHand() {
+    console.log(suitsHand);
+    console.log(cardsHand);
+    var hand = [];
+    for (i = 0; i < suitsHand.length; i++) {
+        if (cardsHand[i] == 1) {
+            hand[i] = "A" + suitsHand[i] + ".png";
+        } else if (cardsHand[i] == 11) {
+            hand[i] = "J" + suitsHand[i] + ".png";
+        } else if (cardsHand[i] == 12) {
+            hand[i] = "Q" + suitsHand[i] + ".png";
+        } else if (cardsHand[i] == 13) {
+            hand[i] = "K" + suitsHand[i] + ".png";
+        } else if (cardsHand[i] == 14) {
+            hand[i] = "A" + suitsHand[i] + ".png";
+        } else {
+            hand[i] = cardsHand[i] + suitsHand[i] + ".png";
+        }
+    }
+    console.log(hand);
+
+    var yourHand = "<p> </p>";
+
+    for (i = 0; i < hand.length; i++) {
+        yourHand += '<img src="./img/' + hand[i] + '" width="200" height="350"/>';
+    }
+    yourHand += "<br/>";
+    document.getElementById("displayHand").innerHTML = yourHand;
+}
+
+function myHand() {
     createHand();
+    displayHand();
+}
+
+function playGame() {
+    //createHand();
     console.log(suitsHand);
     console.log(cardsHand);
     checkPoker();
