@@ -1,4 +1,4 @@
-var cards = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14];
+var cards = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
 var suits = ["C", "D", "H", "S"];
 var msg = "";
 
@@ -15,7 +15,23 @@ function createHand() {
         cardsHand[i] = cards[Math.floor(Math.random() * cards.length)];
     }
 
-    // TODO check per controllare che in una mano non posso avere 14  e 1 insieme
+    // TODO check per controllare che in una mano non posso avere 14 e 1 insieme
+    /*var a = [];
+    var b = [];
+    for (i = 0; i < cardsHand.length; i++) {
+        if (cardsHand[i] == 1) {
+            a.push(i);
+        } else if (cardsHand[i] == 14) {
+            b.push(i);
+        }
+    }
+
+    if (a.length <= b.length) {
+        cardsHand[a[0]] = Math.floor(Math.random() * cards.length);
+    } else {
+        cardsHand[b[0]] = Math.floor(Math.random() * cards.length);
+    }*/
+
 }
 
 /**
@@ -55,7 +71,8 @@ function checkPoker() {
     if (!isDiff) {
         // Sono ordinati dal 10 all'asso?
         //cardsHand = [10, 11, 12, 13, 14];
-        if (cardsHand[0] == 10) {
+        // if (cardsHand[0] == 10)
+        if (cardsHand[0] == 1 && cardsHand[1] == 10) {
             msg = "Royal Flush";
         } else {
             // Sono ordinati in maniera crescente?
@@ -77,14 +94,6 @@ function checkPoker() {
         console.log(msg);
 
     } else {
-        /*var counts = {};
-
-        for (var i = 0; i < cardsHand.length; i++) {
-            var num = cardsHand[i];
-            counts[num] = counts[num] ? counts[num] + 1 : 1;
-        }
-        //console.log(counts);
-        */
 
         var result = occurances(cardsHand);
         console.log(result);
@@ -119,7 +128,7 @@ function checkPoker() {
         if (isTris == 1 && isDouble == 1) {
             // 3 + 2
             msg = "FullHouse";
-        } else if (isOrdered) {
+        } else if ((cardsHand[0] == 1 && cardsHand[1] == 10) || isOrdered) {
             // 5 carte consecutive
             msg = "Straight";
         } else if (isTris == 1 && isDouble == 0) {
@@ -135,7 +144,24 @@ function checkPoker() {
 
         // non meccia, restituisce la carta più alta 
         if (msg == "") {
-            msg = "La carta più alta è: " + cardsHand[cardsHand.length - 1];
+
+            if (cardsHand[0] == 1) {
+                msg = "High Card : A";
+            }
+
+            if (msg == "") {
+
+                if (cardsHand[cardsHand.length - 1] == 11) {
+                    msg = "High Card : J";
+                } else if (cardsHand[cardsHand.length - 1] == 12) {
+                    msg = "High Card : Q";
+                } else if (cardsHand[cardsHand.length - 1] == 13) {
+                    msg = "High Card : K";
+                } else {
+                    msg = "High Card : " + cardsHand[cardsHand.length - 1];
+                }
+            }
+
         }
 
     }
@@ -149,12 +175,14 @@ function checkPoker() {
  */
 function orders(arr) {
     var isOrdered = true;
+
     for (i = 0; i < arr.length - 1; i++) {
         if (arr[i + 1] !== (arr[i] + 1)) {
             isOrdered = false;
             break;
         }
     }
+
     return isOrdered;
 }
 
@@ -180,7 +208,6 @@ function occurances(arr) {
     }
 
     return b;
-
 }
 
 /**
@@ -189,6 +216,7 @@ function occurances(arr) {
 function displayHand() {
     console.log(suitsHand);
     console.log(cardsHand);
+
     var hand = [];
     for (i = 0; i < suitsHand.length; i++) {
         if (cardsHand[i] == 1) {
@@ -199,8 +227,6 @@ function displayHand() {
             hand[i] = "Q" + suitsHand[i] + ".png";
         } else if (cardsHand[i] == 13) {
             hand[i] = "K" + suitsHand[i] + ".png";
-        } else if (cardsHand[i] == 14) {
-            hand[i] = "A" + suitsHand[i] + ".png";
         } else {
             hand[i] = cardsHand[i] + suitsHand[i] + ".png";
         }
@@ -216,13 +242,9 @@ function displayHand() {
     document.getElementById("displayHand").innerHTML = yourHand;
 }
 
-function myHand() {
+function playGame() {
     createHand();
     displayHand();
-}
-
-function playGame() {
-    //createHand();
     console.log(suitsHand);
     console.log(cardsHand);
     checkPoker();
