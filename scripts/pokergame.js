@@ -127,7 +127,7 @@ function checkPoker() {
         }
     } else {
 
-        var result = checkOccurances(cardsHand);
+        var result = checkOccurences(cardsHand);
 
         for (i = 0; i < result.length; i++) {
             // Four cards of the same rank
@@ -217,10 +217,10 @@ function checkOrder(arr) {
 }
 
 /**
- * Checks the occurances in the array
+ * Checks the occurences in the array
  * @param {Array} arr 
  */
-function checkOccurances(arr) {
+function checkOccurences(arr) {
 
     var b = [];
     var prev;
