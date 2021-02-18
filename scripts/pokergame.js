@@ -1,9 +1,20 @@
 var cards = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
+var cardsC = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
+var cardsD = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
+var cardsH = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
+var cardsS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
 var suits = ["C", "D", "H", "S"];
 var msg = "";
+var msgEnd = "";
 
 var suitsHand = [];
 var cardsHand = [];
+
+var suitsC = 13;
+var suitsD = 13;
+var suitsH = 13;
+var suitsS = 13;
+var isFinished = false;
 
 /**
  * Create random the hand of the gamer
@@ -11,10 +22,64 @@ var cardsHand = [];
 function createHand() {
 
     for (i = 0; i < 5; i++) {
-        suitsHand[i] = suits[Math.floor(Math.random() * suits.length)];
-        cardsHand[i] = cards[Math.floor(Math.random() * cards.length)];
+        if (suitsC == 0) {
+            suits = suits.filter(function(item) { return item !== "C" });
+        }
+        if (suitsD == 0) {
+            suits = suits.filter(function(item) { return item !== "D" });
+        }
+        if (suitsH == 0) {
+            suits = suits.filter(function(item) { return item !== "H" });
+        }
+        if (suitsS == 0) {
+            suits = suits.filter(function(item) { return item !== "S" });
+        }
+
+        if (suits.length == 1) {
+            if (suitsC >= 5 || suitsD >= 5 || suitsH >= 5 || suitsS >= 5) {
+                suitsHand[i] = suits[0];
+            } else {
+                isFinished = true;
+                break;
+            }
+        } else {
+            suitsHand[i] = suits[Math.floor(Math.random() * suits.length)];
+        }
+
+        if (suitsHand[i] == "C") {
+            suitsC -= 1;
+        } else if (suitsHand[i] == "D") {
+            suitsD -= 1;
+        } else if (suitsHand[i] == "H") {
+            suitsH -= 1;
+        } else if (suitsHand[i] == "S") {
+            suitsS -= 1;
+        }
     }
 
+    if (!isFinished) {
+
+        suitsHand.sort();
+
+        for (i = 0; i < 5; i++) {
+
+            if (suitsHand[i] == "C") {
+                cardsHand[i] = cardsC[Math.floor(Math.random() * cardsC.length)];
+                cardsC.splice(cardsC.indexOf(cardsHand[i]), 1);
+            } else if (suitsHand[i] == "D") {
+                cardsHand[i] = cardsD[Math.floor(Math.random() * cardsD.length)];
+                cardsD.splice(cardsD.indexOf(cardsHand[i]), 1);
+            } else if (suitsHand[i] == "H") {
+                cardsHand[i] = cardsH[Math.floor(Math.random() * cardsH.length)];
+                cardsH.splice(cardsH.indexOf(cardsHand[i]), 1);
+            } else if (suitsHand[i] == "S") {
+                cardsHand[i] = cardsS[Math.floor(Math.random() * cardsS.length)];
+                cardsS.splice(cardsS.indexOf(cardsHand[i]), 1);
+            }
+        }
+    } else {
+        msgEnd = "The cards are over";
+    }
 }
 
 /**
@@ -47,7 +112,7 @@ function checkPoker() {
     if (!isDiff) {
 
         // Ten to Ace of the same suit
-        if (cardsHand[0] == 1 && cardsHand[1] == 10) {
+        if (checkStraightAce(cardsHand)) {
             msg = "Royal Flush";
         } else {
             // Five consecutive cards of the same suit
@@ -85,7 +150,7 @@ function checkPoker() {
         if (isTris == 1 && isDouble == 1) {
             // Three of a Kind combined with a Pair
             msg = "Full House";
-        } else if ((cardsHand[0] == 1 && cardsHand[1] == 10) || checkOrder(cardsHand)) {
+        } else if ((checkStraightAce(cardsHand)) || checkOrder(cardsHand)) {
             // Five consecutive cards
             msg = "Straight";
         } else if (isTris == 1 && isDouble == 0) {
@@ -123,6 +188,15 @@ function checkPoker() {
             }
         }
     }
+}
+
+/**
+ * Checks if the array is a Straight with Ace
+ * @param {Array} arr 
+ */
+function checkStraightAce(arr) {
+    var straightAce = false;
+    if (arr[0] == 1 && arr[1] == 10 && arr[2] == 11 && arr[3] == 12 && arr[4] == 13) return straightAce = true;
 }
 
 /**
@@ -194,12 +268,19 @@ function displayHand() {
     document.getElementById("displayHand").innerHTML = yourHand;
 }
 
+var click = 0;
 /**
  * Play the game
  */
 function playGame() {
     createHand();
-    displayHand();
-    checkPoker();
+
+    if (msgEnd == "") {
+        displayHand();
+        checkPoker();
+    } else {
+        document.getElementById("end").innerHTML = msgEnd;
+    }
+
     document.getElementById("result").innerHTML = msg;
 }
