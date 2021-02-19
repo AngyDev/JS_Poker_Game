@@ -1,19 +1,10 @@
 var cards = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14];
-var cardsC = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
-var cardsD = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
-var cardsH = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
-var cardsS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
 var suits = ["C", "D", "H", "S"];
 var msg = "";
 var msgEnd = "";
 
-var suitsHand = [];
 var cardsHand = [];
 
-var suitsC = 13;
-var suitsD = 13;
-var suitsH = 13;
-var suitsS = 13;
 var isFinished = false;
 
 // TODO: Add values in the deck, as K, Q, J, A
@@ -35,70 +26,29 @@ function createDeck(suits, cards) {
     return deck;
 }
 
+// TODO: Remember to check if it is not possible to call the function in playGame function 
+var deckCards = createDeck(suits, cards);
+
 /**
- * Create random the hand of the gamer
+ * Create the hand of the gamer random
+ * After 10 games the cards are over
  */
 function createHand() {
+    var index;
+    // TODO: Create a copy of the deck?
+    // Checks if the deck is not over
+    //if (deckCards.length > 2) {
+    for (var i = 0; i < 5; i++) {
+        cardsHand[i] = deckCards[Math.floor(Math.random() * deckCards.length)];
 
-    for (i = 0; i < 5; i++) {
-        if (suitsC == 0) {
-            suits = suits.filter(function(item) { return item !== "C" });
-        }
-        if (suitsD == 0) {
-            suits = suits.filter(function(item) { return item !== "D" });
-        }
-        if (suitsH == 0) {
-            suits = suits.filter(function(item) { return item !== "H" });
-        }
-        if (suitsS == 0) {
-            suits = suits.filter(function(item) { return item !== "S" });
-        }
-
-        if (suits.length == 1) {
-            if (suitsC >= 5 || suitsD >= 5 || suitsH >= 5 || suitsS >= 5) {
-                suitsHand[i] = suits[0];
-            } else {
-                isFinished = true;
-                break;
-            }
-        } else {
-            suitsHand[i] = suits[Math.floor(Math.random() * suits.length)];
-        }
-
-        if (suitsHand[i] == "C") {
-            suitsC -= 1;
-        } else if (suitsHand[i] == "D") {
-            suitsD -= 1;
-        } else if (suitsHand[i] == "H") {
-            suitsH -= 1;
-        } else if (suitsHand[i] == "S") {
-            suitsS -= 1;
-        }
+        // takes the index of the card in the deck
+        index = deckCards.findIndex(obj => obj.card === cardsHand[i].card && obj.suit === cardsHand[i].suit);
+        // Remove the card from the deck
+        deckCards.splice(index, 1);
     }
-
-    if (!isFinished) {
-
-        suitsHand.sort();
-
-        for (i = 0; i < 5; i++) {
-
-            if (suitsHand[i] == "C") {
-                cardsHand[i] = cardsC[Math.floor(Math.random() * cardsC.length)];
-                cardsC.splice(cardsC.indexOf(cardsHand[i]), 1);
-            } else if (suitsHand[i] == "D") {
-                cardsHand[i] = cardsD[Math.floor(Math.random() * cardsD.length)];
-                cardsD.splice(cardsD.indexOf(cardsHand[i]), 1);
-            } else if (suitsHand[i] == "H") {
-                cardsHand[i] = cardsH[Math.floor(Math.random() * cardsH.length)];
-                cardsH.splice(cardsH.indexOf(cardsHand[i]), 1);
-            } else if (suitsHand[i] == "S") {
-                cardsHand[i] = cardsS[Math.floor(Math.random() * cardsS.length)];
-                cardsS.splice(cardsS.indexOf(cardsHand[i]), 1);
-            }
-        }
-    } else {
-        msgEnd = "The cards are over";
-    }
+    //} else {
+    //    document.getElementById("result").innerHTML = "The cards are over!"
+    // }
 }
 
 /**
@@ -295,10 +245,11 @@ var click = 0;
  * Play the game
  */
 function playGame() {
-    console.log(createDeck(suits, cards));
-    /*createHand();
+    //console.log(createDeck(suits, cards));
 
-    if (msgEnd == "") {
+    createHand();
+
+    /*if (msgEnd == "") {
         displayHand();
         checkPoker();
     } else {
