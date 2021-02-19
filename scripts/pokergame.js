@@ -1,4 +1,4 @@
-var cards = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
+var cards = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14];
 var cardsC = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
 var cardsD = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
 var cardsH = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
@@ -15,6 +15,25 @@ var suitsD = 13;
 var suitsH = 13;
 var suitsS = 13;
 var isFinished = false;
+
+// TODO: Add values in the deck, as K, Q, J, A
+/**
+ * Creates a deck of 52 cards
+ * @param {Array} suits - array of 4 suits
+ * @param {Array} cards - array of 13 cards
+ * @returns Array of objects
+ */
+function createDeck(suits, cards) {
+    var deck = [];
+
+    suits.forEach(suit => {
+        cards.forEach(card => {
+            deck.push({ suit, card });
+        });
+    });
+
+    return deck;
+}
 
 /**
  * Create random the hand of the gamer
@@ -100,6 +119,7 @@ function checkPoker() {
     );
 
     suitsHand.sort();
+
     // Check the suit
     for (i = 0; i < suitsHand.length; i++) {
         if (suitsHand[i] != suitsHand[0]) {
@@ -190,6 +210,8 @@ function checkPoker() {
     }
 }
 
+
+// TODO: Remove this function, in poker doesn't exist the Ace with value 1
 /**
  * Checks if the array is a Straight with Ace
  * @param {Array} arr 
@@ -273,7 +295,8 @@ var click = 0;
  * Play the game
  */
 function playGame() {
-    createHand();
+    console.log(createDeck(suits, cards));
+    /*createHand();
 
     if (msgEnd == "") {
         displayHand();
@@ -282,5 +305,5 @@ function playGame() {
         document.getElementById("end").innerHTML = msgEnd;
     }
 
-    document.getElementById("result").innerHTML = msg;
+    document.getElementById("result").innerHTML = msg;*/
 }
