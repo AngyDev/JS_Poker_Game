@@ -52,35 +52,33 @@ function createHand() {
 }
 
 /**
+ * Checks if the hand is a Flush
+ * @returns {boolean} isFlush
+ */
+function isFlush() {
+    /*cardsHand = [
+        { suit: "C", card: 8 },
+        { suit: "C", card: 9 },
+        { suit: "C", card: 2 },
+        { suit: "C", card: 8 },
+        { suit: "C", card: 13 }
+    ];*/
+
+    return cardsHand.every(val => val.suit === cardsHand[0].suit);
+}
+
+/**
  * Check the hand of the gamer
  */
 function checkPoker() {
 
     var isTris = 0;
     var isDouble = 0;
-    var isDiff = false;
     msg = "";
 
-    // Sort the array of the cards
-    cardsHand.sort(
-        function(a, b) {
-            return a - b;
-        }
-    );
-
-    suitsHand.sort();
-
-    // Check the suit
-    for (i = 0; i < suitsHand.length; i++) {
-        if (suitsHand[i] != suitsHand[0]) {
-            isDiff = true;
-            break;
-        }
-    }
-
     // If the cards have the same suit
-    if (!isDiff) {
-
+    if (isFlush()) {
+        // TODO: Refactor the rest of the function
         // Ten to Ace of the same suit
         if (checkStraightAce(cardsHand)) {
             msg = "Royal Flush";
@@ -248,6 +246,7 @@ function playGame() {
     //console.log(createDeck(suits, cards));
 
     createHand();
+    checkPoker();
 
     /*if (msgEnd == "") {
         displayHand();
