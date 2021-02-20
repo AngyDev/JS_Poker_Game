@@ -63,8 +63,17 @@ function isFlush() {
         { suit: "C", card: 8 },
         { suit: "C", card: 13 }
     ];*/
+    return cardsHand.every(obj => obj.suit === cardsHand[0].suit);
+}
 
-    return cardsHand.every(val => val.suit === cardsHand[0].suit);
+/**
+ * Sorts the array
+ * @param {Array} array 
+ */
+function sortsArray(array) {
+    array.sort(function(a, b) {
+        return a.card - b.card;
+    });
 }
 
 /**
@@ -76,26 +85,37 @@ function checkPoker() {
     var isDouble = 0;
     msg = "";
 
+    /*cardsHand = [
+        { suit: "C", card: 11 },
+        { suit: "C", card: 12 },
+        { suit: "C", card: 10 },
+        { suit: "C", card: 13 },
+        { suit: "C", card: 14 }
+    ];*/
+
+    sortsArray(cardsHand);
+
     // If the cards have the same suit
     if (isFlush()) {
-        // TODO: Refactor the rest of the function
-        // Ten to Ace of the same suit
-        if (checkStraightAce(cardsHand)) {
-            msg = "Royal Flush";
-        } else {
-            // Five consecutive cards of the same suit
-            if (checkOrder(cardsHand)) {
+
+        if (checkOrder(cardsHand)) {
+            // Ten to Ace of the same suit
+            if (cardsHand[0].card === 10) {
+                msg = "Royal Flush";
+            } else {
+                // Five consecutive cards of the same suit
                 msg = "Straight Flush"
             }
-        }
-
-        // Five cards of the same suit
-        if (msg == "") {
+        } else {
+            // Five cards of the same suit
             msg = "Flush";
         }
     } else {
 
+        // TODO: Refactor the rest of the function
+        console.log(cardsHand);
         var result = checkOccurences(cardsHand);
+        console.log(result);
 
         for (i = 0; i < result.length; i++) {
             // Four cards of the same rank
@@ -118,7 +138,7 @@ function checkPoker() {
         if (isTris == 1 && isDouble == 1) {
             // Three of a Kind combined with a Pair
             msg = "Full House";
-        } else if ((checkStraightAce(cardsHand)) || checkOrder(cardsHand)) {
+        } else if (cardsHand[0].card === 10 || checkOrder(cardsHand)) {
             // Five consecutive cards
             msg = "Straight";
         } else if (isTris == 1 && isDouble == 0) {
@@ -134,39 +154,30 @@ function checkPoker() {
 
         // No other hand applies 
         if (msg == "") {
-            var lastElement = cardsHand.length - 1;
 
-            if (cardsHand[0] == 1) {
-                msg = "High Card : A";
-            } else {
-                switch (cardsHand[lastElement]) {
-                    case 11:
-                        msg = "High Card : J";
-                        break;
-                    case 12:
-                        msg = "High Card : Q";
-                        break;
-                    case 13:
-                        msg = "High Card : K";
-                        break;
-                    default:
-                        msg = "High Card : " + cardsHand[lastElement];
-                        break;
-                }
+            var max = getHighCard(cardsHand);
+
+            switch (max.card) {
+                case 11:
+                    msg = "High Card : J";
+                    break;
+                case 12:
+                    msg = "High Card : Q";
+                    break;
+                case 13:
+                    msg = "High Card : K";
+                    break;
+                case 14:
+                    msg = "High Card: A";
+                    break;
+                default:
+                    msg = "High Card : " + max.card;
+                    break;
             }
+
         }
+        console.log(msg);
     }
-}
-
-
-// TODO: Remove this function, in poker doesn't exist the Ace with value 1
-/**
- * Checks if the array is a Straight with Ace
- * @param {Array} arr 
- */
-function checkStraightAce(arr) {
-    var straightAce = false;
-    if (arr[0] == 1 && arr[1] == 10 && arr[2] == 11 && arr[3] == 12 && arr[4] == 13) return straightAce = true;
 }
 
 /**
@@ -177,7 +188,7 @@ function checkOrder(arr) {
     var isOrdered = true;
 
     for (i = 0; i < arr.length - 1; i++) {
-        if (arr[i + 1] !== (arr[i] + 1)) {
+        if (arr[i + 1].card !== (arr[i].card + 1)) {
             isOrdered = false;
             break;
         }
@@ -191,21 +202,28 @@ function checkOrder(arr) {
  * @param {Array} arr 
  */
 function checkOccurences(arr) {
-
-    var b = [];
     var prev;
-
-    arr.sort(function(a, b) { return a - b; });
+    var b = [];
 
     for (var i = 0; i < arr.length; i++) {
-        if (arr[i] !== prev) {
+        if (arr[i].card !== prev) {
             b.push(1);
         } else {
             b[b.length - 1]++;
         }
-        prev = arr[i];
+        prev = arr[i].card;
     }
     return b;
+    //arr.reduce((prev, curr) => (prev[curr] = ++prev[curr] || 1, prev), {});
+
+}
+
+/**
+ * Get the max value of the cards 
+ * @param {Array} array - array of objects 
+ */
+function getHighCard(array) {
+    return array.reduce((prev, current) => (prev.card > current.card) ? prev : current);
 }
 
 /**
@@ -214,17 +232,18 @@ function checkOccurences(arr) {
 function displayHand() {
 
     var hand = [];
-    for (i = 0; i < suitsHand.length; i++) {
-        if (cardsHand[i] == 1) {
-            hand[i] = "A" + suitsHand[i] + ".png";
-        } else if (cardsHand[i] == 11) {
-            hand[i] = "J" + suitsHand[i] + ".png";
-        } else if (cardsHand[i] == 12) {
-            hand[i] = "Q" + suitsHand[i] + ".png";
-        } else if (cardsHand[i] == 13) {
-            hand[i] = "K" + suitsHand[i] + ".png";
+    for (i = 0; i < cardsHand.length; i++) {
+
+        if (cardsHand[i].card == 11) {
+            hand[i] = "J" + cardsHand[i].suit + ".png";
+        } else if (cardsHand[i].card == 12) {
+            hand[i] = "Q" + cardsHand[i].suit + ".png";
+        } else if (cardsHand[i].card == 13) {
+            hand[i] = "K" + cardsHand[i].suit + ".png";
+        } else if (cardsHand[i].card == 14) {
+            hand[i] = "A" + cardsHand[i].suit + ".png";
         } else {
-            hand[i] = cardsHand[i] + suitsHand[i] + ".png";
+            hand[i] = cardsHand[i].card + cardsHand[i].suit + ".png";
         }
     }
 
@@ -238,22 +257,20 @@ function displayHand() {
     document.getElementById("displayHand").innerHTML = yourHand;
 }
 
-var click = 0;
 /**
  * Play the game
  */
 function playGame() {
-    //console.log(createDeck(suits, cards));
-
     createHand();
     checkPoker();
+    displayHand();
 
     /*if (msgEnd == "") {
         displayHand();
         checkPoker();
     } else {
         document.getElementById("end").innerHTML = msgEnd;
-    }
+    }*/
 
-    document.getElementById("result").innerHTML = msg;*/
+    document.getElementById("result").innerHTML = msg;
 }
