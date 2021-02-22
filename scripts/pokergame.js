@@ -1,33 +1,33 @@
 var cards = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14];
 var suits = ["C", "D", "H", "S"];
+var cardsValue = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"];
 var msg = "";
 var msgEnd = "";
 
 var cardsHand = [];
 
-var isFinished = false;
-
-// TODO: Add values in the deck, as K, Q, J, A
 /**
  * Creates a deck of 52 cards
  * @param {Array} suits - array of 4 suits
  * @param {Array} cards - array of 13 cards
+ * @param {Array} cardsValue - array of the value of the cards
  * @returns Array of objects
  */
-function createDeck(suits, cards) {
+function createDeck(suits, cards, cardsValue) {
     var deck = [];
 
     suits.forEach(suit => {
-        cards.forEach(card => {
-            deck.push({ suit, card });
-        });
+        for (var i = 0; i < cards.length; i++) {
+            let card = cards[i];
+            let cardValue = cardsValue[i];
+            deck.push({ suit, card, cardValue });
+        }
     });
 
     return deck;
 }
 
-// TODO: Remember to check if it is not possible to call the function in playGame function 
-var deckCards = createDeck(suits, cards);
+var deckCards = createDeck(suits, cards, cardsValue);
 
 /**
  * Create the hand of the gamer random
@@ -35,9 +35,7 @@ var deckCards = createDeck(suits, cards);
  */
 function createHand() {
     var index;
-    // TODO: Create a copy of the deck?
-    // Checks if the deck is not over
-    //if (deckCards.length > 2) {
+
     for (var i = 0; i < 5; i++) {
         cardsHand[i] = deckCards[Math.floor(Math.random() * deckCards.length)];
 
@@ -46,9 +44,6 @@ function createHand() {
         // Remove the card from the deck
         deckCards.splice(index, 1);
     }
-    //} else {
-    //    document.getElementById("result").innerHTML = "The cards are over!"
-    // }
 }
 
 /**
@@ -56,13 +51,6 @@ function createHand() {
  * @returns {boolean} isFlush
  */
 function isFlush() {
-    /*cardsHand = [
-        { suit: "C", card: 8 },
-        { suit: "C", card: 9 },
-        { suit: "C", card: 2 },
-        { suit: "C", card: 8 },
-        { suit: "C", card: 13 }
-    ];*/
     return cardsHand.every(obj => obj.suit === cardsHand[0].suit);
 }
 
@@ -77,117 +65,11 @@ function sortsArray(array) {
 }
 
 /**
- * Check the hand of the gamer
- */
-function checkPoker() {
-
-    var isTris = 0;
-    var isDouble = 0;
-    msg = "";
-
-    /*cardsHand = [
-        { suit: "C", card: 11 },
-        { suit: "C", card: 12 },
-        { suit: "C", card: 10 },
-        { suit: "C", card: 13 },
-        { suit: "C", card: 14 }
-    ];*/
-
-    sortsArray(cardsHand);
-
-    // If the cards have the same suit
-    if (isFlush()) {
-
-        if (checkOrder(cardsHand)) {
-            // Ten to Ace of the same suit
-            if (cardsHand[0].card === 10) {
-                msg = "Royal Flush";
-            } else {
-                // Five consecutive cards of the same suit
-                msg = "Straight Flush"
-            }
-        } else {
-            // Five cards of the same suit
-            msg = "Flush";
-        }
-    } else {
-
-        // TODO: Refactor the rest of the function
-        console.log(cardsHand);
-        var occurences = checkOccurences(cardsHand);
-
-        console.log(Object.values(occurences));
-
-        var resOccurences = Object.values(occurences);
-
-        for (i = 0; i < resOccurences.length; i++) {
-            // Four cards of the same rank
-            if (resOccurences[i] == 4) {
-                msg = "Four of a King";
-                break;
-            }
-
-            // Three cards of the same rank
-            if (resOccurences[i] == 3) {
-                isTris = 1;
-            }
-
-            // For the Pairs
-            if (resOccurences[i] == 2) {
-                isDouble += 1;
-            }
-        }
-
-        if (isTris == 1 && isDouble == 1) {
-            // Three of a Kind combined with a Pair
-            msg = "Full House";
-        } else if (cardsHand[0].card === 10 || checkOrder(cardsHand)) {
-            // Five consecutive cards
-            msg = "Straight";
-        } else if (isTris == 1 && isDouble == 0) {
-            // Three cards of the same rank
-            msg = "Three of a Kind"
-        } else if (isDouble == 2) {
-            // Two separate pairs
-            msg = "Two Pair"
-        } else if (isDouble == 1) {
-            // Two cards of the same rank
-            msg = "Pair";
-        }
-
-        // No other hand applies 
-        if (msg == "") {
-
-            var max = getHighCard(cardsHand);
-
-            switch (max.card) {
-                case 11:
-                    msg = "High Card : J";
-                    break;
-                case 12:
-                    msg = "High Card : Q";
-                    break;
-                case 13:
-                    msg = "High Card : K";
-                    break;
-                case 14:
-                    msg = "High Card: A";
-                    break;
-                default:
-                    msg = "High Card : " + max.card;
-                    break;
-            }
-
-        }
-        console.log(msg);
-    }
-}
-
-/**
  * Checks if the array is ordered
  * @param {Array} arr 
+ * @returns {Boolean} 
  */
-function checkOrder(arr) {
+function checkConsecutiveCards(arr) {
     var isOrdered = true;
 
     for (i = 0; i < arr.length - 1; i++) {
@@ -203,19 +85,91 @@ function checkOrder(arr) {
 /**
  * Checks the occurences in the array
  * @param {Array} arr 
+ * @returns {Object} return an object with the value of the card and the number of occurences
  */
 function checkOccurences(arr) {
-
     return arr.reduce((prev, curr) => (prev[curr.card] = ++prev[curr.card] || 1, prev), {});
-
 }
 
 /**
  * Get the max value of the cards 
  * @param {Array} array - array of objects 
+ * @return {Object} object with the max value
  */
 function getHighCard(array) {
     return array.reduce((prev, current) => (prev.card > current.card) ? prev : current);
+}
+
+/**
+ * Check the hand of the gamer
+ */
+function checkPoker() {
+
+    var isTris = 0;
+    var isDouble = 0;
+
+    sortsArray(cardsHand);
+
+    // If the cards have the same suit
+    if (isFlush()) {
+
+        if (checkConsecutiveCards(cardsHand)) {
+            // Ten to Ace of the same suit
+            if (cardsHand[0].card === 10) {
+                msg = "Royal Flush";
+            } else {
+                // Five consecutive cards of the same suit
+                msg = "Straight Flush"
+            }
+        } else {
+            // Five cards of the same suit
+            msg = "Flush";
+        }
+    } else {
+
+        // count the occurences of the card
+        var resOccurences = Object.values(checkOccurences(cardsHand));
+
+        // Four cards of the same rank
+        if (resOccurences.some(val => val === 4)) {
+            msg = "Four of a Kind";
+        }
+
+        resOccurences.forEach(function(item) {
+            // Three cards of the same rank
+            if (item === 3) {
+                isTris = 1;
+            } else if (item == 2) {
+                // Check the Pairs
+                isDouble += 1;
+            }
+        });
+
+        if (isTris == 1 && isDouble == 1) {
+            // Three of a Kind combined with a Pair
+            msg = "Full House";
+        } else if (checkConsecutiveCards(cardsHand)) {
+            // Five consecutive cards
+            msg = "Straight";
+        } else if (isTris == 1 && isDouble == 0) {
+            // Three cards of the same rank
+            msg = "Three of a Kind"
+        } else if (isDouble == 2) {
+            // Two separate pairs
+            msg = "Two Pair"
+        } else if (isDouble == 1) {
+            // Two cards of the same rank
+            msg = "Pair";
+        }
+
+        // No other hand applies, there aren't occurences
+        if (resOccurences.every(val => val === 1)) {
+
+            var max = getHighCard(cardsHand);
+
+            msg = "High Card : " + max.cardValue;
+        }
+    }
 }
 
 /**
@@ -226,17 +180,7 @@ function displayHand() {
     var hand = [];
     for (i = 0; i < cardsHand.length; i++) {
 
-        if (cardsHand[i].card == 11) {
-            hand[i] = "J" + cardsHand[i].suit + ".png";
-        } else if (cardsHand[i].card == 12) {
-            hand[i] = "Q" + cardsHand[i].suit + ".png";
-        } else if (cardsHand[i].card == 13) {
-            hand[i] = "K" + cardsHand[i].suit + ".png";
-        } else if (cardsHand[i].card == 14) {
-            hand[i] = "A" + cardsHand[i].suit + ".png";
-        } else {
-            hand[i] = cardsHand[i].card + cardsHand[i].suit + ".png";
-        }
+        hand[i] = cardsHand[i].cardValue + cardsHand[i].suit + ".png";
     }
 
     var yourHand = "<p> </p>";
@@ -254,15 +198,21 @@ function displayHand() {
  */
 function playGame() {
     createHand();
-    checkPoker();
-    displayHand();
 
-    /*if (msgEnd == "") {
+    var countRemainingCards = deckCards.length;
+
+    if (countRemainingCards > 2) {
         displayHand();
         checkPoker();
     } else {
-        document.getElementById("end").innerHTML = msgEnd;
-    }*/
-
+        msgEnd = "The game is ended";
+        document.getElementById("playBtn").disabled = true;
+        document.getElementById("restartBtn").style.display = "block";
+    }
+    document.getElementById("remainingCards").innerHTML = "Remaining " + countRemainingCards + " cards <b>" + msgEnd + "</b>";
     document.getElementById("result").innerHTML = msg;
+}
+
+function restart() {
+    window.location.reload();
 }

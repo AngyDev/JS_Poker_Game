@@ -9,12 +9,17 @@
 <body>
     <div id="pokergame">
         <h1>Poker Game</h1>
-        <button onclick="playGame()">Play</button>
+        <button id="playBtn" onclick="playGame()">Play</button>
+
+        <div>
+            <P id="remainingCards"></P>
+            <h3 id="result"></h3>
+        </div>
 
         <div id="displayHand"></div>
 
-        <h3 id="result"></h3>
-        <h3 id="end"></h3>
+        <button id="restartBtn" onclick="restart()" style="display: none;">Restart</button>
+
     </div>
     <script src="./scripts/pokergame.js"></script>
 </body>
