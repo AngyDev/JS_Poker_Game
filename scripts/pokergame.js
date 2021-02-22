@@ -190,7 +190,7 @@ function displayHand(cardsHand) {
     var yourHand = "<p> </p>";
 
     for (i = 0; i < hand.length; i++) {
-        yourHand += '<img src="./img/' + hand[i] + '" width="200" height="350"/>';
+        yourHand += '<img src="./img/' + hand[i] + '" width="100" height="150"/>';
     }
 
     yourHand += "<br/>";
@@ -202,6 +202,17 @@ function displayHand(cardsHand) {
  */
 function playGame() {
     var cardsHand = [];
+
+    var playerNum = document.getElementById("playerNum").value;
+
+    const k = 'cardsHand';
+    var game = [];
+
+    for (var j = 1; j <= playerNum; j++) {
+        game[k + j] = createHand();
+    }
+
+    console.log(game);
 
     cardsHand = createHand();
 
