@@ -114,23 +114,26 @@ function checkPoker() {
 
         // TODO: Refactor the rest of the function
         console.log(cardsHand);
-        var result = checkOccurences(cardsHand);
-        console.log(result);
+        var occurences = checkOccurences(cardsHand);
 
-        for (i = 0; i < result.length; i++) {
+        console.log(Object.values(occurences));
+
+        var resOccurences = Object.values(occurences);
+
+        for (i = 0; i < resOccurences.length; i++) {
             // Four cards of the same rank
-            if (result[i] == 4) {
+            if (resOccurences[i] == 4) {
                 msg = "Four of a King";
                 break;
             }
 
             // Three cards of the same rank
-            if (result[i] == 3) {
+            if (resOccurences[i] == 3) {
                 isTris = 1;
             }
 
             // For the Pairs
-            if (result[i] == 2) {
+            if (resOccurences[i] == 2) {
                 isDouble += 1;
             }
         }
@@ -202,19 +205,8 @@ function checkOrder(arr) {
  * @param {Array} arr 
  */
 function checkOccurences(arr) {
-    var prev;
-    var b = [];
 
-    for (var i = 0; i < arr.length; i++) {
-        if (arr[i].card !== prev) {
-            b.push(1);
-        } else {
-            b[b.length - 1]++;
-        }
-        prev = arr[i].card;
-    }
-    return b;
-    //arr.reduce((prev, curr) => (prev[curr] = ++prev[curr] || 1, prev), {});
+    return arr.reduce((prev, curr) => (prev[curr.card] = ++prev[curr.card] || 1, prev), {});
 
 }
 
