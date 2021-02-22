@@ -4,8 +4,6 @@ var cardsValue = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "
 var msg = "";
 var msgEnd = "";
 
-var cardsHand = [];
-
 /**
  * Creates a deck of 52 cards
  * @param {Array} suits - array of 4 suits
@@ -35,6 +33,7 @@ var deckCards = createDeck(suits, cards, cardsValue);
  */
 function createHand() {
     var index;
+    var cardsHand = [];
 
     for (var i = 0; i < 5; i++) {
         cardsHand[i] = deckCards[Math.floor(Math.random() * deckCards.length)];
@@ -44,13 +43,16 @@ function createHand() {
         // Remove the card from the deck
         deckCards.splice(index, 1);
     }
+
+    return cardsHand;
 }
 
 /**
  * Checks if the hand is a Flush
+ * @param {Array} cardsHand - The cards of the player
  * @returns {boolean} isFlush
  */
-function isFlush() {
+function isFlush(cardsHand) {
     return cardsHand.every(obj => obj.suit === cardsHand[0].suit);
 }
 
@@ -66,14 +68,14 @@ function sortsArray(array) {
 
 /**
  * Checks if the array is ordered
- * @param {Array} arr 
+ * @param {Array} array 
  * @returns {Boolean} 
  */
-function checkConsecutiveCards(arr) {
+function checkConsecutiveCards(array) {
     var isOrdered = true;
 
-    for (i = 0; i < arr.length - 1; i++) {
-        if (arr[i + 1].card !== (arr[i].card + 1)) {
+    for (i = 0; i < array.length - 1; i++) {
+        if (array[i + 1].card !== (array[i].card + 1)) {
             isOrdered = false;
             break;
         }
@@ -84,11 +86,11 @@ function checkConsecutiveCards(arr) {
 
 /**
  * Checks the occurences in the array
- * @param {Array} arr 
+ * @param {Array} array 
  * @returns {Object} return an object with the value of the card and the number of occurences
  */
-function checkOccurences(arr) {
-    return arr.reduce((prev, curr) => (prev[curr.card] = ++prev[curr.card] || 1, prev), {});
+function checkOccurences(array) {
+    return array.reduce((prev, curr) => (prev[curr.card] = ++prev[curr.card] || 1, prev), {});
 }
 
 /**
@@ -101,9 +103,10 @@ function getHighCard(array) {
 }
 
 /**
- * Check the hand of the gamer
+ * Check the hand of the player
+ * @param {Array} cardsHand - The cards of the player
  */
-function checkPoker() {
+function checkPoker(cardsHand) {
 
     var isTris = 0;
     var isDouble = 0;
@@ -111,7 +114,7 @@ function checkPoker() {
     sortsArray(cardsHand);
 
     // If the cards have the same suit
-    if (isFlush()) {
+    if (isFlush(cardsHand)) {
 
         if (checkConsecutiveCards(cardsHand)) {
             // Ten to Ace of the same suit
@@ -174,8 +177,9 @@ function checkPoker() {
 
 /**
  * Display the Hand on the page
+ * @param {Array} cardsHand - The cards of the player
  */
-function displayHand() {
+function displayHand(cardsHand) {
 
     var hand = [];
     for (i = 0; i < cardsHand.length; i++) {
@@ -197,13 +201,15 @@ function displayHand() {
  * Play the game
  */
 function playGame() {
-    createHand();
+    var cardsHand = [];
+
+    cardsHand = createHand();
 
     var countRemainingCards = deckCards.length;
 
     if (countRemainingCards > 2) {
-        displayHand();
-        checkPoker();
+        displayHand(cardsHand);
+        checkPoker(cardsHand);
     } else {
         msgEnd = "The game is ended";
         document.getElementById("playBtn").disabled = true;
