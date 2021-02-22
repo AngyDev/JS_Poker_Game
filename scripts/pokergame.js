@@ -213,6 +213,9 @@ function playGame() {
     document.getElementById("result").innerHTML = msg;
 }
 
+/**
+ * Restart the game
+ */
 function restart() {
     window.location.reload();
 }
