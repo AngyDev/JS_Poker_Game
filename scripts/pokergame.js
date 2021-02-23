@@ -125,9 +125,7 @@ function getHighCard(array) {
  * @param {Array} cardsHand - The cards of the player
  */
 function checkPoker(cardsHand) {
-    var msg = "";
     var handValue;
-
 
     var isTris = 0;
     var isDouble = 0;
