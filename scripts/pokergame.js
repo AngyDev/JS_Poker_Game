@@ -205,18 +205,14 @@ function playGame() {
 
     var playerNum = document.getElementById("playerNum").value;
 
-    const k = 'cardsHand';
-    var game = [];
+    /*var cardsPlayers = [];
 
-    for (var j = 1; j <= playerNum; j++) {
-        game[k + j] = createHand();
-    }
-
-    console.log(game);
-
-    cardsHand = createHand();
+    for (var i = 1; i <= playerNum; i++) {
+        cardsPlayers[i] = createHand();
+    }*/
 
     var countRemainingCards = deckCards.length;
+    cardsHand = createHand();
 
     if (countRemainingCards > 2) {
         displayHand(cardsHand);
