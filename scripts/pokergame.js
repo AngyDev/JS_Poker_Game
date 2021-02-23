@@ -3,6 +3,7 @@ var suits = ["C", "D", "H", "S"];
 var cardsValue = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"];
 var msg = "";
 var msgEnd = "";
+var countRemainingCards = 52;
 
 /**
  * Creates a deck of 52 cards
@@ -21,6 +22,8 @@ function createDeck(suits, cards, cardsValue) {
             deck.push({ suit, card, cardValue });
         }
     });
+
+    countRemainingCards = deck.length;
 
     return deck;
 }
@@ -44,6 +47,7 @@ function createHand() {
         deckCards.splice(index, 1);
     }
 
+    countRemainingCards = deckCards.length;
     return cardsHand;
 }
 
@@ -211,10 +215,8 @@ function playGame() {
         cardsPlayers[i] = createHand();
     }*/
 
-    var countRemainingCards = deckCards.length;
-    cardsHand = createHand();
-
     if (countRemainingCards > 2) {
+        cardsHand = createHand();
         displayHand(cardsHand);
         checkPoker(cardsHand);
     } else {
