@@ -1,7 +1,7 @@
 var cards = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14];
 var suits = ["C", "D", "H", "S"];
 var cardsValue = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"];
-var msg = "";
+//var msg = "";
 var msgEnd = "";
 var countRemainingCards = 52;
 
@@ -111,6 +111,8 @@ function getHighCard(array) {
  * @param {Array} cardsHand - The cards of the player
  */
 function checkPoker(cardsHand) {
+    var msg = "";
+    var max = 0;
 
     var isTris = 0;
     var isDouble = 0;
@@ -126,7 +128,7 @@ function checkPoker(cardsHand) {
                 msg = "Royal Flush";
             } else {
                 // Five consecutive cards of the same suit
-                msg = "Straight Flush"
+                msg = "Straight Flush";
             }
         } else {
             // Five cards of the same suit
@@ -172,60 +174,73 @@ function checkPoker(cardsHand) {
         // No other hand applies, there aren't occurences
         if (resOccurences.every(val => val === 1)) {
 
-            var max = getHighCard(cardsHand);
+            max = getHighCard(cardsHand);
 
             msg = "High Card : " + max.cardValue;
         }
     }
+
+    return msg;
 }
 
 /**
- * Display the Hand on the page
+ * Display the cards on the page
  * @param {Array} cardsHand - The cards of the player
+ * @returns The HTML images of the cards
  */
-function displayHand(cardsHand) {
+function displayCards(cardsHand) {
 
     var hand = [];
+    var yourHand = "";
+
     for (i = 0; i < cardsHand.length; i++) {
 
         hand[i] = cardsHand[i].cardValue + cardsHand[i].suit + ".png";
-    }
-
-    var yourHand = "<p> </p>";
-
-    for (i = 0; i < hand.length; i++) {
         yourHand += '<img src="./img/' + hand[i] + '" width="100" height="150"/>';
+
     }
 
     yourHand += "<br/>";
-    document.getElementById("displayHand").innerHTML = yourHand;
+    return yourHand;
 }
 
 /**
  * Play the game
  */
 function playGame() {
-    var cardsHand = [];
+    var msg = "";
+    var cardsPlayers = [];
+    var yourHand;
 
+    document.getElementById("playerNum").disabled = true;
     var playerNum = document.getElementById("playerNum").value;
 
-    /*var cardsPlayers = [];
+    for (var i = 0; i < playerNum; i++) {
+        if (countRemainingCards > (52 % (playerNum * 5))) {
+            // Creates the cards of the players
+            cardsPlayers[i] = createHand();
 
-    for (var i = 1; i <= playerNum; i++) {
-        cardsPlayers[i] = createHand();
-    }*/
+            console.log(cardsPlayers[i]);
+            // Shows the cards
+            yourHand = displayCards(cardsPlayers[i]);
+            // Checks what is the hand of the players
+            msg = checkPoker(cardsPlayers[i]);
 
-    if (countRemainingCards > 2) {
-        cardsHand = createHand();
-        displayHand(cardsHand);
-        checkPoker(cardsHand);
-    } else {
-        msgEnd = "The game is ended";
-        document.getElementById("playBtn").disabled = true;
-        document.getElementById("restartBtn").style.display = "block";
+            var id = "cardsPlayer" + [i + 1];
+            var columnId = "column" + [i + 1];
+            document.getElementById(columnId).style.display = "block";
+            document.getElementById(id).innerHTML = yourHand;
+            var resultId = "result" + [i + 1];
+            document.getElementById(resultId).innerHTML = msg;
+
+        } else {
+            msgEnd = "The game is ended";
+            document.getElementById("playBtn").disabled = true;
+            document.getElementById("restartBtn").style.display = "block";
+        }
     }
     document.getElementById("remainingCards").innerHTML = "Remaining " + countRemainingCards + " cards <b>" + msgEnd + "</b>";
-    document.getElementById("result").innerHTML = msg;
+
 }
 
 /**
