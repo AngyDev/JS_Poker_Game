@@ -17,3 +17,28 @@ button {
     color: white;
     border-radius: 10px;
 }
+
+h2 {
+    display: inline;
+}
+
+h3 {
+    display: inline;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+.column {
+    float: left;
+    width: 50%;
+    padding: 10px;
+    height: 300px;
+}
+
+.row:after {
+    content: "";
+    display: table;
+    clear: both;
+}

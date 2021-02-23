@@ -11,7 +11,7 @@
         <h1>Poker Game</h1>
 
         <form>
-            Choose the number of player:
+            Choose the number of players:
             <select id="playerNum">
                 <option value="1">1</option>
                 <option value="2">2</option>
@@ -24,7 +24,34 @@
 
         <div>
             <P id="remainingCards"></P>
-            <h3 id="result"></h3>
+            <!--<h3 id="result"></h3>-->
+        </div>
+
+        <div id="table">
+            <div class="row">
+                <div id="column1" class="column" style="display: none;">
+                    <h2>Giocatore 1 </h2>
+                    <h3 id="result1"></h3>
+                    <p id="cardsPlayer1"></p>
+                </div>
+                <div id="column2" class="column" style="display: none;">
+                    <h2>Giocatore 2</h2>
+                    <h3 id="result2"></h3>
+                    <p id="cardsPlayer2"></p>
+                </div>
+            </div>
+            <div class="row">
+                <div id="column3" class="column" style="display: none;">
+                    <h2>Giocatore 3</h2>
+                    <h3 id="result3"></h3>
+                    <p id="cardsPlayer3"></p>
+                </div>
+                <div id="column4" class="column" style="display: none;">
+                    <h2>Giocatore 4</h2>
+                    <h3 id="result4"></h3>
+                    <p id="cardsPlayer4"></p>
+                </div>
+            </div>
         </div>
 
         <div id="displayHand"></div>
