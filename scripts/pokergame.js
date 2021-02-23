@@ -4,6 +4,20 @@ var cardsValue = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "
 //var msg = "";
 var msgEnd = "";
 var countRemainingCards = 52;
+var max = 0;
+
+var score = {
+    1: "High card",
+    2: "Pair",
+    3: "Two Pair",
+    4: "Three of a Kind",
+    5: "Straight",
+    6: "Flush",
+    7: "Full House",
+    8: "Four of a Kind",
+    9: "Straight Flush",
+    10: "Royal Flush"
+};
 
 /**
  * Creates a deck of 52 cards
@@ -112,7 +126,8 @@ function getHighCard(array) {
  */
 function checkPoker(cardsHand) {
     var msg = "";
-    var max = 0;
+    var handValue;
+
 
     var isTris = 0;
     var isDouble = 0;
@@ -125,14 +140,14 @@ function checkPoker(cardsHand) {
         if (checkConsecutiveCards(cardsHand)) {
             // Ten to Ace of the same suit
             if (cardsHand[0].card === 10) {
-                msg = "Royal Flush";
+                handValue = 10;
             } else {
                 // Five consecutive cards of the same suit
-                msg = "Straight Flush";
+                handValue = 9;
             }
         } else {
             // Five cards of the same suit
-            msg = "Flush";
+            handValue = 6;
         }
     } else {
 
@@ -141,7 +156,7 @@ function checkPoker(cardsHand) {
 
         // Four cards of the same rank
         if (resOccurences.some(val => val === 4)) {
-            msg = "Four of a Kind";
+            handValue = 8;
         }
 
         resOccurences.forEach(function(item) {
@@ -156,19 +171,19 @@ function checkPoker(cardsHand) {
 
         if (isTris == 1 && isDouble == 1) {
             // Three of a Kind combined with a Pair
-            msg = "Full House";
+            handValue = 7;
         } else if (checkConsecutiveCards(cardsHand)) {
             // Five consecutive cards
-            msg = "Straight";
+            handValue = 5;
         } else if (isTris == 1 && isDouble == 0) {
             // Three cards of the same rank
-            msg = "Three of a Kind"
+            handValue = 4;
         } else if (isDouble == 2) {
             // Two separate pairs
-            msg = "Two Pair"
+            handValue = 3;
         } else if (isDouble == 1) {
             // Two cards of the same rank
-            msg = "Pair";
+            handValue = 2;
         }
 
         // No other hand applies, there aren't occurences
@@ -176,11 +191,11 @@ function checkPoker(cardsHand) {
 
             max = getHighCard(cardsHand);
 
-            msg = "High Card : " + max.cardValue;
+            handValue = 1;
         }
     }
 
-    return msg;
+    return handValue;
 }
 
 /**
@@ -210,6 +225,7 @@ function displayCards(cardsHand) {
 function playGame() {
     var msg = "";
     var cardsPlayers = [];
+    var result = [];
     var yourHand;
 
     document.getElementById("playerNum").disabled = true;
@@ -224,7 +240,13 @@ function playGame() {
             // Shows the cards
             yourHand = displayCards(cardsPlayers[i]);
             // Checks what is the hand of the players
-            msg = checkPoker(cardsPlayers[i]);
+            result.push(checkPoker(cardsPlayers[i]));
+
+            if (result[i] === 1) {
+                msg = score[result[i]] + " " + max.cardValue;
+            } else {
+                msg = score[result[i]];
+            }
 
             var id = "cardsPlayer" + [i + 1];
             var columnId = "column" + [i + 1];
@@ -239,6 +261,16 @@ function playGame() {
             document.getElementById("restartBtn").style.display = "block";
         }
     }
+
+    var winner = result.reduce((prev, curr) => (prev > curr) ? prev : curr);
+
+    var msgWinner = score[winner];
+
+    document.getElementById("winner").style.display = "block";
+    document.getElementById("winner").innerHTML = "Winner: " + msgWinner;
+
+    console.log(result);
+
     document.getElementById("remainingCards").innerHTML = "Remaining " + countRemainingCards + " cards <b>" + msgEnd + "</b>";
 
 }
