@@ -9,17 +9,51 @@
 <body>
     <div id="pokergame">
         <h1>Poker Game</h1>
-        <button id="playBtn" onclick="playGame()">Play</button>
 
+        <form>
+            Choose the number of players:
+            <select id="playerNum">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+            </select>
+        </form>
+        <br>
         <div>
-            <P id="remainingCards"></P>
-            <h3 id="result"></h3>
+            <button id="playBtn" onclick="playGame()">Play</button>
+            <p id="remainingCards"></p>
+            <button id="restartBtn" onclick="restart()" style="display: none;">Restart</button>
         </div>
 
-        <div id="displayHand"></div>
+        <h3 class="result" id="winner" style="display: none;"></h3>
 
-        <button id="restartBtn" onclick="restart()" style="display: none;">Restart</button>
-
+        <div id="table">
+            <div class="row">
+                <div id="column1" class="column" style="display: none;">
+                    <h3>Player 1 </h3>
+                    <h3 class="result" id="result1"></h3>
+                    <p id="cardsPlayer1"></p>
+                </div>
+                <div id="column2" class="column" style="display: none;">
+                    <h3>Player 2</h3>
+                    <h3 class="result" id="result2"></h3>
+                    <p id="cardsPlayer2"></p>
+                </div>
+            </div>
+            <div class="row">
+                <div id="column3" class="column" style="display: none;">
+                    <h3>Player 3</h3>
+                    <h3 class="result" id="result3"></h3>
+                    <p id="cardsPlayer3"></p>
+                </div>
+                <div id="column4" class="column" style="display: none;">
+                    <h3>Player 4</h3>
+                    <h3 class="result" id="result4"></h3>
+                    <p id="cardsPlayer4"></p>
+                </div>
+            </div>
+        </div>
     </div>
     <script src="./scripts/pokergame.js"></script>
 </body>

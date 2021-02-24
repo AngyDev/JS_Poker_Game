@@ -1,11 +1,21 @@
 var cards = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14];
 var suits = ["C", "D", "H", "S"];
 var cardsValue = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"];
-var msg = "";
-var msgEnd = "";
 var countRemainingCards = 52;
+var max = 0;
 
-var cardsHand = [];
+var score = {
+    1: "High card",
+    2: "Pair",
+    3: "Two Pair",
+    4: "Three of a Kind",
+    5: "Straight",
+    6: "Flush",
+    7: "Full House",
+    8: "Four of a Kind",
+    9: "Straight Flush",
+    10: "Royal Flush"
+};
 
 /**
  * Creates a deck of 52 cards
@@ -33,11 +43,11 @@ function createDeck(suits, cards, cardsValue) {
 var deckCards = createDeck(suits, cards, cardsValue);
 
 /**
- * Create the hand of the gamer random
- * After 10 games the cards are over
+ * Create the hand of the player random
  */
 function createHand() {
     var index;
+    var cardsHand = [];
 
     for (var i = 0; i < 5; i++) {
         cardsHand[i] = deckCards[Math.floor(Math.random() * deckCards.length)];
@@ -47,15 +57,17 @@ function createHand() {
         // Remove the card from the deck
         deckCards.splice(index, 1);
     }
-
     countRemainingCards = deckCards.length;
+
+    return cardsHand;
 }
 
 /**
  * Checks if the hand is a Flush
+ * @param {Array} cardsHand - The cards of the player
  * @returns {boolean} isFlush
  */
-function isFlush() {
+function isFlush(cardsHand) {
     return cardsHand.every(obj => obj.suit === cardsHand[0].suit);
 }
 
@@ -71,14 +83,14 @@ function sortsArray(array) {
 
 /**
  * Checks if the array is ordered
- * @param {Array} arr 
+ * @param {Array} array 
  * @returns {Boolean} 
  */
-function checkConsecutiveCards(arr) {
+function checkConsecutiveCards(array) {
     var isOrdered = true;
 
-    for (i = 0; i < arr.length - 1; i++) {
-        if (arr[i + 1].card !== (arr[i].card + 1)) {
+    for (i = 0; i < array.length - 1; i++) {
+        if (array[i + 1].card !== (array[i].card + 1)) {
             isOrdered = false;
             break;
         }
@@ -89,15 +101,15 @@ function checkConsecutiveCards(arr) {
 
 /**
  * Checks the occurences in the array
- * @param {Array} arr 
+ * @param {Array} array 
  * @returns {Object} return an object with the value of the card and the number of occurences
  */
-function checkOccurences(arr) {
-    return arr.reduce((prev, curr) => (prev[curr.card] = ++prev[curr.card] || 1, prev), {});
+function checkOccurences(array) {
+    return array.reduce((prev, curr) => (prev[curr.card] = ++prev[curr.card] || 1, prev), {});
 }
 
 /**
- * Get the max value of the cards 
+ * Gets the max value of the cards 
  * @param {Array} array - array of objects 
  * @return {Object} object with the max value
  */
@@ -106,9 +118,22 @@ function getHighCard(array) {
 }
 
 /**
- * Check the hand of the gamer
+ * Gets the sum of the cards
+ * @param {Array} array
+ * @returns {Number} The sum of the cards
  */
-function checkPoker() {
+function getCardsSum(array) {
+    return array.reduce((prev, curr) => prev + curr.card, 0);
+}
+
+/**
+ * Check the hand of the player
+ * @param {Array} cardsHand - The cards of the player
+ * @returns an object that represents the player with the value of the hand and the points
+ */
+function checkPoker(cardsHand) {
+    var handValue;
+    var cardsSum = 0;
 
     var isTris = 0;
     var isDouble = 0;
@@ -116,104 +141,199 @@ function checkPoker() {
     sortsArray(cardsHand);
 
     // If the cards have the same suit
-    if (isFlush()) {
+    if (isFlush(cardsHand)) {
 
         if (checkConsecutiveCards(cardsHand)) {
             // Ten to Ace of the same suit
             if (cardsHand[0].card === 10) {
-                msg = "Royal Flush";
+                handValue = 10;
             } else {
                 // Five consecutive cards of the same suit
-                msg = "Straight Flush"
+                handValue = 9;
             }
         } else {
             // Five cards of the same suit
-            msg = "Flush";
+            handValue = 6;
         }
+
+        cardsSum = getCardsSum(cardsHand);
     } else {
-
         // count the occurences of the card
-        var resOccurences = Object.values(checkOccurences(cardsHand));
+        var cardsOccurences = checkOccurences(cardsHand);
+        var valOccurences = Object.values(cardsOccurences);
 
-        // Four cards of the same rank
-        if (resOccurences.some(val => val === 4)) {
-            msg = "Four of a Kind";
+        var sommaPair = 0;
+
+        for (item in cardsOccurences) {
+            if (cardsOccurences[item] === 4) {
+                handValue = 8;
+                cardsSum = item * 4;
+                break;
+            }
+
+            if (cardsOccurences[item] === 3) {
+                isTris = 1;
+                cardsSum = item * 3;
+                // Three cards of the same rank
+                handValue = 4;
+            } else if (isTris === 1 && cardsOccurences[item] === 2) {
+                // Three of a Kind combined with a Pair
+                handValue = 7;
+                // It will be possible to add the sum of the pair to do the comparison between the hands with the same tris
+            } else if (isTris === 0 && cardsOccurences[item] === 2) {
+                isDouble += 1;
+
+                if (isDouble === 1) {
+                    // Two cards of the same rank
+                    handValue = 2;
+                    cardsSum = item * 2;
+                } else {
+                    // Two separate pairs
+                    handValue = 3;
+                    sommaPair = item * 2;
+                    if (sommaPair > cardsSum) {
+                        cardsSum = sommaPair;
+                    }
+                }
+            }
         }
 
-        resOccurences.forEach(function(item) {
-            // Three cards of the same rank
-            if (item === 3) {
-                isTris = 1;
-            } else if (item == 2) {
-                // Check the Pairs
-                isDouble += 1;
-            }
-        });
-
-        if (isTris == 1 && isDouble == 1) {
-            // Three of a Kind combined with a Pair
-            msg = "Full House";
-        } else if (checkConsecutiveCards(cardsHand)) {
+        if (checkConsecutiveCards(cardsHand)) {
             // Five consecutive cards
-            msg = "Straight";
-        } else if (isTris == 1 && isDouble == 0) {
-            // Three cards of the same rank
-            msg = "Three of a Kind"
-        } else if (isDouble == 2) {
-            // Two separate pairs
-            msg = "Two Pair"
-        } else if (isDouble == 1) {
-            // Two cards of the same rank
-            msg = "Pair";
+            handValue = 5;
+            cardsSum = getCardsSum(cardsHand);
         }
 
         // No other hand applies, there aren't occurences
-        if (resOccurences.every(val => val === 1)) {
-
-            var max = getHighCard(cardsHand);
-
-            msg = "High Card : " + max.cardValue;
+        if (valOccurences.every(val => val === 1)) {
+            max = getHighCard(cardsHand);
+            handValue = 1;
+            cardsSum = max.card;
         }
     }
+
+    var player = {};
+    player.handValue = handValue;
+    player.points = cardsSum;
+
+    return player;
 }
 
 /**
- * Display the Hand on the page
+ * Display the cards on the page
+ * @param {Array} cardsHand - The cards of the player
+ * @returns The HTML images of the cards
  */
-function displayHand() {
+function displayCards(cardsHand) {
 
     var hand = [];
+    var yourHand = "";
+    var extension = ".png";
+
     for (i = 0; i < cardsHand.length; i++) {
 
-        hand[i] = cardsHand[i].cardValue + cardsHand[i].suit + ".png";
+        hand[i] = cardsHand[i].cardValue + cardsHand[i].suit + extension;
+        yourHand += '<img src="./img/' + hand[i] + '" width="100" height="150"/>';
+
     }
 
-    var yourHand = "<p> </p>";
-
-    for (i = 0; i < hand.length; i++) {
-        yourHand += '<img src="./img/' + hand[i] + '" width="200" height="350"/>';
-    }
-
-    yourHand += "<br/>";
-    document.getElementById("displayHand").innerHTML = yourHand;
+    return yourHand;
 }
 
 /**
  * Play the game
  */
 function playGame() {
+    var msg = "";
+    var cardsPlayers = [];
+    var result = [];
+    var yourHand;
+    var msgEnd = "";
 
-    if (countRemainingCards > 2) {
-        createHand();
-        displayHand();
-        checkPoker();
+    document.getElementById("playerNum").disabled = true;
+    var playerNum = document.getElementById("playerNum").value;
+
+    // If there aren't more cards to play the game is over
+    if (countRemainingCards > (52 % (playerNum * 5))) {
+        for (var i = 0; i < playerNum; i++) {
+            // Creates the cards of the players
+            cardsPlayers[i] = createHand();
+
+            // Checks what is the hand of the players
+            result.push(checkPoker(cardsPlayers[i]));
+
+            // If the hand is a high card get the value of the max
+            if (result[i].handValue === 1) {
+                msg = score[result[i].handValue] + " " + max.cardValue;
+            } else {
+                msg = score[result[i].handValue];
+            }
+
+            // Shows the cards
+            yourHand = displayCards(cardsPlayers[i]);
+
+            // Sents the cards and the result to the html page 
+            var id = "cardsPlayer" + [i + 1];
+            var columnId = "column" + [i + 1];
+            document.getElementById(columnId).style.display = "block";
+            document.getElementById(id).innerHTML = yourHand;
+
+            var resultId = "result" + [i + 1];
+            document.getElementById(resultId).innerHTML = msg;
+
+        }
+
+        var winners = [];
+        if (playerNum > 1) {
+            winners = checkWinners(result);
+        }
+
+        if (winners.length !== 0) {
+            var msg = "You Win: ";
+
+            if (winners.length == 1) {
+                msg += "Player " + winners[0];
+            } else {
+                winners.forEach(item => msg += " Player " + item);
+            }
+
+            document.getElementById("winner").style.display = "block";
+            document.getElementById("winner").innerHTML = msg;
+        }
     } else {
         msgEnd = "The game is ended";
         document.getElementById("playBtn").disabled = true;
-        document.getElementById("restartBtn").style.display = "block";
+        document.getElementById("restartBtn").style.display = "inline";
     }
+
     document.getElementById("remainingCards").innerHTML = "Remaining " + countRemainingCards + " cards <b>" + msgEnd + "</b>";
-    document.getElementById("result").innerHTML = msg;
+
+}
+
+/**
+ * Checks who is the winner of the game
+ * @param {Array} array - list of objects with handValue and points of each player
+ * @returns array of the winners
+ */
+function checkWinners(array) {
+    var winner = array[0];
+    var winners = [1];
+
+    for (var i = 1; i < array.length; i++) {
+        if (array[i].handValue === winner.handValue) {
+            if (array[i].points > winner.points) {
+                winner = array[i];
+                winners = [i + 1];
+            } else if (array[i].points === winner.points) {
+                winners.push(i + 1);
+            }
+        } else if (array[i].handValue > winner.handValue) {
+            winner = array[i];
+            winners = [i + 1];
+        }
+    }
+
+    return winners;
 }
 
 /**
