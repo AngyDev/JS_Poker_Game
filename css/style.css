@@ -2,6 +2,7 @@ body {
     background-color: #9bec9b;
     color: rgb(0, 0, 0);
     font-size: 150%;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     margin: 0px 0px 0px 0px;
 }
 
@@ -18,12 +19,22 @@ button {
     border-radius: 10px;
 }
 
+p#remainingCards {
+    display: inline;
+    font-size: 18px;
+    margin-left: 0px 40px 0px 40px;
+}
+
 h2 {
     display: inline;
 }
 
 h3 {
     display: inline;
+}
+
+.result {
+    color: red;
 }
 
 * {
@@ -33,7 +44,8 @@ h3 {
 .column {
     float: left;
     width: 50%;
-    height: 300px;
+    height: 250px;
+    margin-top: 10px;
 }
 
 .row:after {
