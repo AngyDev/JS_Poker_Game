@@ -261,6 +261,8 @@ function playGame() {
 
             // Checks what is the hand of the players
             result.push(checkPoker(cardsPlayers[i]));
+            // Adds the number of the player
+            result[i].playerNum = i + 1;
 
             // If the hand is a high card get the value of the max
             if (result[i].handValue === 1) {
@@ -316,22 +318,24 @@ function playGame() {
  * @returns array of the winners
  */
 function checkWinners(array) {
-    var winner = array[0];
-    var winners = [1];
 
-    for (var i = 1; i < array.length; i++) {
-        if (array[i].handValue === winner.handValue) {
-            if (array[i].points > winner.points) {
-                winner = array[i];
-                winners = [i + 1];
-            } else if (array[i].points === winner.points) {
-                winners.push(i + 1);
-            }
-        } else if (array[i].handValue > winner.handValue) {
-            winner = array[i];
-            winners = [i + 1];
+    array.sort((a, b) => {
+        if (a.handValue === b.handValue) {
+            return b.points - a.points;
         }
-    }
+        return b.handValue > a.handValue ? 1 : -1;
+    });
+
+    var winners = [array[0].playerNum];
+
+    array.reduce(function(acc, curr) {
+        if (acc.handValue === curr.handValue) {
+            if (acc.points === curr.points) {
+                return winners.push(curr.playerNum);
+            }
+        }
+        return winners;
+    });
 
     return winners;
 }
