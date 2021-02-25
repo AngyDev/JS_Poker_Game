@@ -300,12 +300,10 @@ function displayCards(cardsHand) {
     var yourHand = "";
     var extension = ".png";
 
-    for (i = 0; i < cardsHand.length; i++) {
-
-        hand[i] = cardsHand[i].cardValue + cardsHand[i].suit + extension;
-        yourHand += '<img src="./img/' + hand[i] + '" width="100" height="150"/>';
-
-    }
+    cardsHand.forEach((item, index) => {
+        hand[index] = item.cardValue + item.suit + extension;
+        yourHand += '<img src="./img/' + hand[index] + '" width="100" height="150"/>';
+    })
 
     return yourHand;
 }
