@@ -18,6 +18,76 @@ var score = {
 };
 
 /**
+ * Play the game
+ */
+function playGame() {
+    var players = [];
+    var msgEnd = "";
+
+    document.getElementById("playerNum").disabled = true;
+    var playerNum = document.getElementById("playerNum").value;
+
+    // If there aren't more cards to play the game is over
+    if (countRemainingCards > (52 % (playerNum * 5))) {
+        // Creates the game
+        players = createGame(playerNum);
+        // Creates the winners message
+        createWinnersMsg(players, playerNum);
+
+    } else {
+        msgEnd = "The game is ended";
+        document.getElementById("playBtn").disabled = true;
+        document.getElementById("restartBtn").style.display = "inline";
+    }
+
+    document.getElementById("remainingCards").innerHTML = "Remaining " + countRemainingCards + " cards <b>" + msgEnd + "</b>";
+}
+
+/**
+ * Create the hand and check the hand
+ * @param {Number} playerNum - The number of the player of the game
+ * @returns array of players
+ */
+function createGame(playerNum) {
+    var result = [];
+    var cardsPlayers = [];
+    var yourHand;
+    var msg = "";
+
+    for (var i = 0; i < playerNum; i++) {
+        // Creates the cards of the players
+        cardsPlayers[i] = createHand();
+
+        // Checks what is the hand of the players
+        result.push(checkPoker(cardsPlayers[i]));
+        // Adds the number of the player
+        result[i].playerNum = i + 1;
+
+        // If the hand is a high card get the value of the max
+        if (result[i].handValue === 1) {
+            msg = score[result[i].handValue] + " " + max.cardValue;
+        } else {
+            msg = score[result[i].handValue];
+        }
+
+        // Shows the cards
+        yourHand = displayCards(cardsPlayers[i]);
+
+        // Sents the cards and the result to the html page 
+        var id = "cardsPlayer" + [i + 1];
+        var columnId = "column" + [i + 1];
+        document.getElementById(columnId).style.display = "block";
+        document.getElementById(id).innerHTML = yourHand;
+
+        var resultId = "result" + [i + 1];
+        document.getElementById(resultId).innerHTML = msg;
+
+    }
+
+    return result;
+}
+
+/**
  * Creates a deck of 52 cards
  * @param {Array} suits - array of 4 suits
  * @param {Array} cards - array of 13 cards
@@ -230,86 +300,36 @@ function displayCards(cardsHand) {
     var yourHand = "";
     var extension = ".png";
 
-    for (i = 0; i < cardsHand.length; i++) {
-
-        hand[i] = cardsHand[i].cardValue + cardsHand[i].suit + extension;
-        yourHand += '<img src="./img/' + hand[i] + '" width="100" height="150"/>';
-
-    }
+    cardsHand.forEach((item, index) => {
+        hand[index] = item.cardValue + item.suit + extension;
+        yourHand += '<img src="./img/' + hand[index] + '" width="100" height="150"/>';
+    })
 
     return yourHand;
 }
 
 /**
- * Play the game
+ * Creates the winners message
+ * @param {Array} players - Array of objects
+ * @param {Number} playerNum - The number of players
  */
-function playGame() {
-    var msg = "";
-    var cardsPlayers = [];
-    var result = [];
-    var yourHand;
-    var msgEnd = "";
-
-    document.getElementById("playerNum").disabled = true;
-    var playerNum = document.getElementById("playerNum").value;
-
-    // If there aren't more cards to play the game is over
-    if (countRemainingCards > (52 % (playerNum * 5))) {
-        for (var i = 0; i < playerNum; i++) {
-            // Creates the cards of the players
-            cardsPlayers[i] = createHand();
-
-            // Checks what is the hand of the players
-            result.push(checkPoker(cardsPlayers[i]));
-            // Adds the number of the player
-            result[i].playerNum = i + 1;
-
-            // If the hand is a high card get the value of the max
-            if (result[i].handValue === 1) {
-                msg = score[result[i].handValue] + " " + max.cardValue;
-            } else {
-                msg = score[result[i].handValue];
-            }
-
-            // Shows the cards
-            yourHand = displayCards(cardsPlayers[i]);
-
-            // Sents the cards and the result to the html page 
-            var id = "cardsPlayer" + [i + 1];
-            var columnId = "column" + [i + 1];
-            document.getElementById(columnId).style.display = "block";
-            document.getElementById(id).innerHTML = yourHand;
-
-            var resultId = "result" + [i + 1];
-            document.getElementById(resultId).innerHTML = msg;
-
-        }
-
-        var winners = [];
-        if (playerNum > 1) {
-            winners = checkWinners(result);
-        }
-
-        if (winners.length !== 0) {
-            var msg = "You Win: ";
-
-            if (winners.length == 1) {
-                msg += "Player " + winners[0];
-            } else {
-                winners.forEach(item => msg += " Player " + item);
-            }
-
-            document.getElementById("winner").style.display = "block";
-            document.getElementById("winner").innerHTML = msg;
-        }
-    } else {
-        msgEnd = "The game is ended";
-        document.getElementById("playBtn").disabled = true;
-        document.getElementById("restartBtn").style.display = "inline";
+function createWinnersMsg(players, playerNum) {
+    var winners = [];
+    if (playerNum > 1) {
+        winners = checkWinners(players);
     }
+    if (winners.length !== 0) {
+        var msgWin = "You Win: ";
 
-    document.getElementById("remainingCards").innerHTML = "Remaining " + countRemainingCards + " cards <b>" + msgEnd + "</b>";
+        if (winners.length == 1) {
+            msgWin += "Player " + winners[0];
+        } else {
+            winners.forEach(item => msgWin += " Player " + item);
+        }
 
+        document.getElementById("winner").style.display = "block";
+        document.getElementById("winner").innerHTML = msgWin;
+    }
 }
 
 /**
